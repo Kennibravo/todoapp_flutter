@@ -50,7 +50,7 @@ class _CategoryItemState extends State<CategoryItem> {
                     style: TextStyle(color: Colors.grey[600], fontSize: 15),
                   ),
                   Text(
-                    categories[index]['name']!,
+                    categories[index]['name'].toString(),
                     style: Theme.of(context)
                         .textTheme
                         .headline5!
@@ -69,7 +69,7 @@ class _CategoryItemState extends State<CategoryItem> {
                         duration: const Duration(seconds: 1),
                         width: cardWidth,
                         height: 5,
-                        color: Colors.red[300],
+                        color: categories[index]['color'] as Color,
                       ),
                     ],
                   ),

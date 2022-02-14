@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-var primaryColor = Colors.green;
+var primaryColor = Colors.blue;
 
 class CustomTheme {
   static ThemeData get lightTheme {
@@ -22,7 +22,6 @@ class CustomTheme {
           textStyle: const TextStyle(fontSize: 12.0),
         ),
       ),
-      textTheme: TextTheme()
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -28,9 +29,11 @@ class HeaderItem extends StatelessWidget {
                 ),
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                },
                 icon: FaIcon(
-                  FontAwesomeIcons.bell,
+                  FontAwesomeIcons.signOutAlt,
                   color: Colors.grey[500],
                 ),
               ),

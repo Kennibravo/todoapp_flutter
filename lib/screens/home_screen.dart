@@ -1,10 +1,16 @@
+import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:todoapp/screens/new_task_screen.dart';
 import 'package:todoapp/widgets/category_item.dart';
 import 'package:todoapp/widgets/header_item.dart';
 import 'package:todoapp/widgets/task_item.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  HomeScreen({Key? key}) : super(key: key);
+
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +20,7 @@ class HomeScreen extends StatelessWidget {
       body: Container(
         padding: EdgeInsets.only(
           top: mediaQuery.padding.top + 15,
-          bottom: mediaQuery.padding.bottom + 15,
+          bottom: mediaQuery.padding.bottom,
         ),
         child: SingleChildScrollView(
           child: Column(
@@ -28,7 +34,7 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     FittedBox(
                       child: Text(
-                        'What\'s up, Kenny!',
+                        'What\'s up, ${auth.currentUser!.displayName}!',
                         style: Theme.of(context).textTheme.bodyText1!.copyWith(
                             fontSize: 35, fontWeight: FontWeight.bold),
                       ),
@@ -47,7 +53,7 @@ class HomeScreen extends StatelessWidget {
                       style: TextStyle(
                           color: Colors.grey[600], fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 15),
+                    // const SizedBox(height: 15),
                     TaskItem(),
                   ],
                 ),
@@ -56,6 +62,41 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButton: SizedBox(
+        width: 80,
+        height: 80,
+        child: FloatingActionButton(
+          heroTag: 'newTask',
+          backgroundColor: Colors.blue,
+          onPressed: () {
+            Navigator.of(context).pushNamed('/newTask');
+          },
+          child: const Icon(Icons.add, size: 30),
+        ),
+      ),
+      bottomNavigationBar: BottomNavyBar(
+          backgroundColor: null,
+          showElevation: true,
+          itemCornerRadius: 24,
+          curve: Curves.easeIn,
+          items: [
+            BottomNavyBarItem(
+              icon: Icon(Icons.home),
+              title: Text('Home'),
+              textAlign: TextAlign.center,
+            ),
+            BottomNavyBarItem(
+              icon: Icon(Icons.category),
+              title: Text('Category'),
+              textAlign: TextAlign.center,
+            ),
+            BottomNavyBarItem(
+              icon: Icon(Icons.history),
+              title: Text('History'),
+              textAlign: TextAlign.center,
+            ),
+          ],
+          onItemSelected: (page) {}),
     );
   }
 }
