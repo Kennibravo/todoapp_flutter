@@ -7,7 +7,7 @@ import 'package:todoapp/models/category.dart';
 import 'package:todoapp/models/tasks.dart';
 
 class TaskItem extends StatefulWidget {
-  TaskItem({Key? key}) : super(key: key);
+  const TaskItem({Key? key}) : super(key: key);
 
   @override
   State<TaskItem> createState() => _TaskItemState();
@@ -28,9 +28,9 @@ class _TaskItemState extends State<TaskItem> {
   @override
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> tasksStream = firestore
-        .collection('users')
-        .doc(auth.currentUser!.uid)
         .collection('tasks')
+        .doc(auth.currentUser!.uid)
+        .collection('task')
         .orderBy('date', descending: true)
         .snapshots();
 
@@ -102,7 +102,7 @@ class _TaskItemState extends State<TaskItem> {
                                     const SizedBox(width: 5),
                                     Text(
                                       DateFormat.yMMMd()
-                                          .format(task['date'].toDate()),
+                                          .format(DateTime.parse(task['date'])),
                                       style: const TextStyle(fontSize: 12),
                                     )
                                   ],
@@ -122,12 +122,30 @@ class _TaskItemState extends State<TaskItem> {
   }
 
   void updateStatus(String status, String id) async {
-    await firestore
-        .collection('users')
-        .doc(auth.currentUser!.uid)
-        .collection('tasks')
-        .doc(id)
-        .update({'status': status});
+    try {
+      firestore
+          .collection('tasks')
+          .doc(auth.currentUser!.uid)
+          .collection('task')
+          .doc(id)
+          .update({'status': status});
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text('Task set to $status!'),
+        ),
+      );
+
+      // ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text('Task cannot be set to $status, something went wrong!'),
+        ),
+      );
+    }
   }
 
   Future<void> editTask(String id, BuildContext ctx) {

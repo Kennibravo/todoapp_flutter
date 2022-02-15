@@ -211,14 +211,21 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   }
 
   void addTask() async {
-    final doc = firestore.collection('users').doc(auth.currentUser!.uid);
+    // print(defaultCategory);
+
+    print('heres');
+    final doc = firestore
+        .collection('tasks')
+        .doc(auth.currentUser!.uid)
+        .collection('task');
 
     try {
-      await doc.collection('tasks').add({
+      await doc.add({
         'title': titleController.text,
         'content': contentController.text,
         'date': selectedDate!.toIso8601String(),
         'status': (selectedDate != DateTime.now() ? 'pending' : 'completed'),
+        'categories': {defaultCategory: true}
       });
 
       print("Added task");
