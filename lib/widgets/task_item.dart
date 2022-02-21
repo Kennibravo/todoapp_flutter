@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:todoapp/models/category.dart';
-import 'package:todoapp/models/tasks.dart';
 
 class TaskItem extends StatefulWidget {
   const TaskItem({Key? key}) : super(key: key);
@@ -66,7 +65,7 @@ class _TaskItemState extends State<TaskItem> {
                               doc.data()! as Map<String, dynamic>;
                           // print(task);
                           return GestureDetector(
-                            onLongPress: () => editTask(doc.id, context),
+                            onTap: () => Navigator.of(context).pushNamed('/viewTask'),
                             child: Card(
                               elevation: 0.3,
                               shadowColor: Colors.grey[200],

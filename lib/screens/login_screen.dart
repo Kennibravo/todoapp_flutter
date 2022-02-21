@@ -29,12 +29,23 @@ class AuthGate extends StatelessWidget {
       builder: (context, snapshot) {
         // User is not signed in
         if (!snapshot.hasData) {
-          return const SignInScreen(providerConfigs: [
-            EmailProviderConfiguration(),
-            GoogleProviderConfiguration(
-              clientId: clientId,
-            )
-          ]);
+          return SignInScreen(
+              footerBuilder: (context, _) {
+                return Row(
+                  children: [
+                    const Text('Don\'t have an account?'),
+                    const SizedBox(width: 5),
+                    TextButton(onPressed: () {}, child: const Text('Register'))
+                  ],
+                );
+              },
+              showAuthActionSwitch: false,
+              providerConfigs: const [
+                EmailProviderConfiguration(),
+                GoogleProviderConfiguration(
+                  clientId: clientId,
+                )
+              ]);
         }
 
         // Render your application if authenticated

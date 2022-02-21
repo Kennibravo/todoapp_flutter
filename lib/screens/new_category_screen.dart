@@ -96,7 +96,7 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
 
   void addCategory() async {
     final provider = Provider.of<CategoryProvider>(context, listen: false);
-    provider.createCategory(nameController.text);
+    await provider.createCategory(nameController.text);
     // .collection('Work');
   }
 }

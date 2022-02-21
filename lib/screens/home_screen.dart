@@ -42,11 +42,8 @@ class HomeScreen extends StatelessWidget {
                     FittedBox(
                       child: Text(
                         'What\'s up, ${auth.currentUser!.displayName}!',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyText1!
-                            .copyWith(
-                                fontSize: 35, fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                            fontSize: 35, fontWeight: FontWeight.bold),
                       ),
                     ),
                     const SizedBox(height: 18),
@@ -98,8 +95,7 @@ class HomeScreen extends StatelessWidget {
                                 // });
                                 // category.collection('tasks')
 
-                                Navigator.of(context)
-                                    .pushNamed('/newCategory');
+                                Navigator.of(context).pushNamed('/newCategory');
                               },
                               child: const Text('Create new')),
                         )
@@ -111,11 +107,10 @@ class HomeScreen extends StatelessWidget {
                     Text(
                       'TODAY\'S TASKS',
                       style: TextStyle(
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.bold),
+                          color: Colors.grey[600], fontWeight: FontWeight.bold),
                     ),
                     // const SizedBox(height: 15),
-                    TaskItem(),
+                    const TaskItem(),
                   ],
                 ),
               ),
@@ -129,22 +124,7 @@ class HomeScreen extends StatelessWidget {
         child: FloatingActionButton(
           heroTag: 'newTask',
           backgroundColor: Colors.blue,
-          onPressed: () async {
-            final userDetails = await firestore
-                .collection('users')
-                .doc(auth.currentUser!.uid)
-                .get();
-
-            final String username = ('users.${userDetails['username']}');
-
-            final category = await firestore
-                .collection('categories')
-                .where(username, isEqualTo: true)
-                .get();
-
-            print(category.docs.map((e) => e.data()).toList());
-            Navigator.of(context).pushNamed('/newTask');
-          },
+          onPressed: () => Navigator.of(context).pushNamed('/newTask'),
           child: const Icon(Icons.add, size: 30),
         ),
       ),

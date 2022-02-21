@@ -4,8 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todoapp/models/category.dart';
 import 'package:intl/intl.dart';
+import 'package:todoapp/providers/category_provider.dart';
+import 'package:todoapp/providers/task_provider.dart';
 
 class NewTaskScreen extends StatefulWidget {
   const NewTaskScreen({Key? key}) : super(key: key);
@@ -18,9 +21,10 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   final titleController = TextEditingController();
   final contentController = TextEditingController();
 
-  var defaultCategory = categories[0]['name'].toString();
+  // var defaultCategory = categories[0]['name'].toString();
   final FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  String? defaultCategory;
 
   DateTime? selectedDate;
 
@@ -28,12 +32,25 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   void dispose() {
     titleController.dispose();
     contentController.dispose();
+
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    final provider = Provider.of<CategoryProvider>(context, listen: false);
+    defaultCategory = provider.categories[1].name;
+
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
+    final provider = Provider.of<CategoryProvider>(context, listen: false);
+    // final defaultCategory = provider.categories[1].name;
+
+    String? selectedCategory;
 
     return Hero(
       tag: 'newTask',
@@ -93,6 +110,56 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                 Row(
                   children: [
                     ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 2,
+                        primary: Colors.white,
+                        onPrimary: const Color.fromARGB(255, 122, 48, 48),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 18, vertical: 6),
+                      ),
+                      onPressed: () {
+                        showTaskDatePicker();
+                      },
+                      icon: const Icon(Icons.calendar_today_outlined),
+                      label: const Text(
+                        'Choose date',
+                        style: TextStyle(fontSize: 13),
+                      ),
+                    ),
+                    const SizedBox(width: 30),
+                    Container(
+                      width: 150,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 10),
+                      child: DropdownButton(
+                        elevation: 0,
+                        value: defaultCategory,
+                        borderRadius: BorderRadius.circular(20),
+                        // items: categories.map((Map<String, Object?> items) {
+                        //   return DropdownMenuItem(
+                        //     value: items['name'],
+                        //     child: Text(items['name'].toString()),
+                        //   );
+                        // }).toList(),
+                        items: provider.categories
+                            .map((items) => DropdownMenuItem(
+                                  value: items.name,
+                                  child: Text(items.name.toString()),
+                                ))
+                            .toList(),
+                        onChanged: (item) {
+                          setState(() {
+                            defaultCategory = item.toString();
+                            // print(selectedCategory);
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    ElevatedButton.icon(
                       onPressed: () {},
                       icon: const Icon(Icons.date_range_rounded),
                       label: Text(
@@ -112,50 +179,6 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                     ),
                   ],
                 ),
-                Row(
-                  children: [
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        elevation: 2,
-                        primary: Colors.white,
-                        onPrimary: Color.fromARGB(255, 122, 48, 48),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 18, vertical: 6),
-                      ),
-                      onPressed: () {
-                        showTaskDatePicker();
-                      },
-                      icon: const Icon(Icons.calendar_today_outlined),
-                      label: const Text(
-                        'Today',
-                        style: TextStyle(fontSize: 13),
-                      ),
-                    ),
-                    const SizedBox(width: 30),
-                    Container(
-                      width: 150,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 10),
-                      child: DropdownButton(
-                        elevation: 0,
-                        value: defaultCategory,
-                        borderRadius: BorderRadius.circular(20),
-                        items: categories.map((Map<String, Object?> items) {
-                          return DropdownMenuItem(
-                            value: items['name'],
-                            child: Text(items['name'].toString()),
-                          );
-                        }).toList(),
-                        onChanged: (item) {
-                          setState(() {
-                            defaultCategory = item.toString();
-                            print(defaultCategory);
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                )
               ],
             ),
           ),
@@ -163,7 +186,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         floatingActionButton: FloatingActionButton.extended(
           icon: const Icon(Icons.new_label),
           onPressed: () {
-            addTask();
+            addTask(defaultCategory!);
             Navigator.of(context).pop();
           },
           backgroundColor: Colors.blue,
@@ -210,27 +233,39 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     }
   }
 
-  void addTask() async {
-    // print(defaultCategory);
+  void addTask(String categoryName) async {
+    final categoryProvider =
+        Provider.of<CategoryProvider>(context, listen: false);
 
-    print('heres');
-    final doc = firestore
-        .collection('tasks')
-        .doc(auth.currentUser!.uid)
-        .collection('task');
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
 
-    try {
-      await doc.add({
-        'title': titleController.text,
-        'content': contentController.text,
-        'date': selectedDate!.toIso8601String(),
-        'status': (selectedDate != DateTime.now() ? 'pending' : 'completed'),
-        'categories': {defaultCategory: true}
-      });
+    final category = categoryProvider.categories
+        .firstWhere((category) => category.name == categoryName);
 
-      print("Added task");
-    } catch (e) {
-      print(e);
-    }
+    await taskProvider.addTask(
+      title: titleController.text,
+      content: contentController.text,
+      category: category,
+      date: selectedDate ?? DateTime.now(),
+    );
+
+    // final doc = firestore
+    //     .collection('tasks')
+    //     .doc(auth.currentUser!.uid)
+    //     .collection('task');
+
+    // try {
+    //   await doc.add({
+    //     'title': titleController.text,
+    //     'content': contentController.text,
+    //     'date': selectedDate!.toIso8601String(),
+    //     'status': (selectedDate != DateTime.now() ? 'pending' : 'completed'),
+    //     'categories': {category: true}
+    //   });
+
+    //   print("Added task");
+    // } catch (e) {
+    //   print(e);
+    // }
   }
 }

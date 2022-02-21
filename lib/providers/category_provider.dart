@@ -58,8 +58,8 @@ class CategoryProvider extends ChangeNotifier {
             .where(categoryMap, isEqualTo: true)
             .get();
 
-        print(data);
-        print(totalTaskInCategory.docs.length);
+        // print(data);
+        // print(totalTaskInCategory.docs.length);
 
         _categories!.add(
           Category(
