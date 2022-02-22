@@ -36,13 +36,8 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     super.dispose();
   }
 
-  @override
-  void initState() {
-    final provider = Provider.of<CategoryProvider>(context, listen: false);
-    defaultCategory = provider.categories[1].name;
 
-    super.initState();
-  }
+
 
   @override
   Widget build(BuildContext context) {

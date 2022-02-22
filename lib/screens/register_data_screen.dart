@@ -195,7 +195,7 @@ class _RegisterDataScreenState extends State<RegisterDataScreen> {
       'last_name': lastnameController.text
     });
 
-    final userProvider = Provider.of<UserProvider>(context);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
     await userProvider.getAndSetUserDetails();
   }
 }

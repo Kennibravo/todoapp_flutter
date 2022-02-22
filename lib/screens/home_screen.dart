@@ -70,22 +70,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     FittedBox(
-                      child: _usernameLoading
-                          ? const SizedBox(
-                              width: 10,
-                              height: 20,
-                              child: LinearProgressIndicator())
-                          : Text(
-                              "What's up, ${userProvider.userDetail!.userData['username']}",
-                              // 'hg',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText1!
-                                  .copyWith(
-                                      fontSize: 35,
-                                      fontWeight: FontWeight.bold),
-                            ),
-                    ),
+                        child: _usernameLoading
+                            ? const SizedBox(
+                                width: 10,
+                                height: 20,
+                                child: Text('...'))
+                            : userProvider.userDetail != null
+                                ? Text(
+                                    "What's up, ${userProvider.userDetail!.userData['username']}",
+                                    // 'hg',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1!
+                                        .copyWith(
+                                            fontSize: 35,
+                                            fontWeight: FontWeight.bold),
+                                  )
+                                : const Text('')),
                     const SizedBox(height: 18),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
