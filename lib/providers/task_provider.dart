@@ -30,7 +30,7 @@ class TaskProvider extends ChangeNotifier {
       final task = await collection.add({
         'title': title,
         'content': content,
-        'date': date.toIso8601String(),
+        'date': date,
         'status': 'pending',
         'categories': {category.name: true},
       });

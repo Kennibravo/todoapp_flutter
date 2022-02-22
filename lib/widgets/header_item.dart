@@ -31,6 +31,7 @@ class HeaderItem extends StatelessWidget {
               IconButton(
                 onPressed: () async {
                   await FirebaseAuth.instance.signOut();
+                  Navigator.of(context).pop();
                 },
                 icon: FaIcon(
                   FontAwesomeIcons.signOutAlt,

@@ -3,25 +3,55 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todoapp/models/category.dart';
+import 'package:todoapp/models/user.dart';
 import 'package:todoapp/providers/category_provider.dart';
+import 'package:todoapp/providers/user_provider.dart';
 import 'package:todoapp/screens/new_task_screen.dart';
 import 'package:todoapp/widgets/category_item.dart';
 import 'package:todoapp/widgets/header_item.dart';
 import 'package:todoapp/widgets/task_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final FirebaseAuth auth = FirebaseAuth.instance;
+  UserModel? userDetails;
+  var _usernameLoading = false;
+
+  @override
+  void initState() {
+    // Future.delayed(Duration.zero, () async {
+    //   setState(() {
+    //     _usernameLoading = true;
+    //   });
+    //   final userProvider = Provider.of<UserProvider>(context, listen: false);
+    //   print("${userProvider.userDetail!.userData['username']} is the name");
+    //   // await userProvider.getAndSetUserDetails();
+    //   // userDetails = userProvider.userDetail;
+
+    //   setState(() {
+    //     _usernameLoading = false;
+    //   });
+    //   // print("the name is ${userDetails!.userData['username']}");
+    // });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final FirebaseAuth auth = FirebaseAuth.instance;
-    final provider = Provider.of<CategoryProvider>(context, listen: false);
+    // final provider = Provider.of<CategoryProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    // FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     return Scaffold(
       body: Container(
@@ -40,11 +70,21 @@ class HomeScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     FittedBox(
-                      child: Text(
-                        'What\'s up, ${auth.currentUser!.displayName}!',
-                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                            fontSize: 35, fontWeight: FontWeight.bold),
-                      ),
+                      child: _usernameLoading
+                          ? const SizedBox(
+                              width: 10,
+                              height: 20,
+                              child: LinearProgressIndicator())
+                          : Text(
+                              "What's up, ${userProvider.userDetail!.userData['username']}",
+                              // 'hg',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1!
+                                  .copyWith(
+                                      fontSize: 35,
+                                      fontWeight: FontWeight.bold),
+                            ),
                     ),
                     const SizedBox(height: 18),
                     Row(
@@ -56,7 +96,7 @@ class HomeScreen extends StatelessWidget {
                               color: Colors.grey[600],
                               fontWeight: FontWeight.bold),
                         ),
-                        Container(
+                        SizedBox(
                           width: 100,
                           height: 23,
                           child: ElevatedButton(
