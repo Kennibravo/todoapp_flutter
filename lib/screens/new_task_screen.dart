@@ -36,8 +36,12 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    Provider.of<CategoryProvider>(context, listen: false).getAllCategories();
 
-
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -180,8 +184,8 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         ),
         floatingActionButton: FloatingActionButton.extended(
           icon: const Icon(Icons.new_label),
-          onPressed: () {
-            addTask(defaultCategory!);
+          onPressed: () async {
+            await addTask(defaultCategory!);
             Navigator.of(context).pop();
           },
           backgroundColor: Colors.blue,
@@ -228,7 +232,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     }
   }
 
-  void addTask(String categoryName) async {
+  Future<void> addTask(String categoryName) async {
     final categoryProvider =
         Provider.of<CategoryProvider>(context, listen: false);
 
@@ -243,24 +247,5 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
       category: category,
       date: selectedDate ?? DateTime.now(),
     );
-
-    // final doc = firestore
-    //     .collection('tasks')
-    //     .doc(auth.currentUser!.uid)
-    //     .collection('task');
-
-    // try {
-    //   await doc.add({
-    //     'title': titleController.text,
-    //     'content': contentController.text,
-    //     'date': selectedDate!.toIso8601String(),
-    //     'status': (selectedDate != DateTime.now() ? 'pending' : 'completed'),
-    //     'categories': {category: true}
-    //   });
-
-    //   print("Added task");
-    // } catch (e) {
-    //   print(e);
-    // }
   }
 }

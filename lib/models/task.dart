@@ -5,7 +5,7 @@ class Task {
   final String title;
   final String content;
   final Category category;
-  final String status;
+  String status;
   final DateTime date;
 
   Task({

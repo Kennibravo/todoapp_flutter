@@ -25,7 +25,8 @@ class CategoryProvider extends ChangeNotifier {
         'users': {userDetails['username']: true}
       });
 
-      final newCategory = Category(name, auth.currentUser!.uid, DateTime.now(), 0);
+      final newCategory =
+          Category(name, auth.currentUser!.uid, DateTime.now(), 0);
       _categories!.add(newCategory);
 
       notifyListeners();
@@ -57,9 +58,6 @@ class CategoryProvider extends ChangeNotifier {
             .collection('task')
             .where(categoryMap, isEqualTo: true)
             .get();
-
-        // print(data);
-        // print(totalTaskInCategory.docs.length);
 
         _categories!.add(
           Category(

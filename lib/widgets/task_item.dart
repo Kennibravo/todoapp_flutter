@@ -3,7 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:todoapp/models/category.dart';
+import 'package:todoapp/providers/category_provider.dart';
+import 'package:todoapp/providers/task_provider.dart';
 
 class TaskItem extends StatefulWidget {
   const TaskItem({Key? key}) : super(key: key);
@@ -25,6 +28,20 @@ class _TaskItemState extends State<TaskItem> {
   }
 
   @override
+  void initState() {
+    Future.delayed(Duration.zero, () async {
+      await Provider.of<TaskProvider>(context, listen: false).getAllTasks();
+    });
+
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> tasksStream = firestore
         .collection('tasks')
@@ -32,6 +49,7 @@ class _TaskItemState extends State<TaskItem> {
         .collection('task')
         .orderBy('date', descending: true)
         .snapshots();
+    final provider = Provider.of<TaskProvider>(context, listen: false);
 
     return SizedBox(
         height: 900,
@@ -65,7 +83,8 @@ class _TaskItemState extends State<TaskItem> {
                               doc.data()! as Map<String, dynamic>;
                           // print(task);
                           return GestureDetector(
-                            onTap: () => Navigator.of(context).pushNamed('/viewTask'),
+                            onTap: () =>
+                                Navigator.of(context).pushNamed('/viewTask'),
                             child: Card(
                               elevation: 0.3,
                               shadowColor: Colors.grey[200],
@@ -76,8 +95,10 @@ class _TaskItemState extends State<TaskItem> {
                                     ? IconButton(
                                         padding: const EdgeInsets.all(0),
                                         icon: const Icon(Icons.circle_outlined),
-                                        onPressed: () =>
-                                            updateStatus('completed', doc.id),
+                                        onPressed: () async =>
+                                            await provider.changeTaskStatus(
+                                                doc.id, 'completed', context),
+                                        // updateStatus('completed', doc.id),
                                         iconSize: 35,
                                         color: Colors.red)
                                     : IconButton(
@@ -85,8 +106,10 @@ class _TaskItemState extends State<TaskItem> {
                                         icon: const Icon(Icons.check_circle),
                                         iconSize: 35,
                                         color: Colors.green,
-                                        onPressed: () =>
-                                            updateStatus('pending', doc.id),
+                                        onPressed: () async =>
+                                            provider.changeTaskStatus(
+                                                doc.id, 'pending', context),
+                                        // updateStatus('pending', doc.id),
                                       ),
                                 title: Text(
                                   task['title']!,

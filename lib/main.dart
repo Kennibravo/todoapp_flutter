@@ -25,8 +25,10 @@ void main() async {
         ChangeNotifierProvider.value(
           value: CategoryProvider(),
         ),
-        ChangeNotifierProvider.value(
-          value: TaskProvider(),
+        ChangeNotifierProxyProvider<CategoryProvider, TaskProvider>(
+          update: (ctx, categoryProvider, previousTask) =>
+              TaskProvider(categoryProvider.categories),
+          create: (_) => TaskProvider([]),
         ),
         ChangeNotifierProvider.value(
           value: UserProvider(),

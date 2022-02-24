@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:todoapp/models/category.dart';
 import 'package:todoapp/models/user.dart';
 import 'package:todoapp/providers/category_provider.dart';
+import 'package:todoapp/providers/task_provider.dart';
 import 'package:todoapp/providers/user_provider.dart';
 import 'package:todoapp/screens/new_task_screen.dart';
 import 'package:todoapp/widgets/category_item.dart';
@@ -69,24 +70,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    FittedBox(
-                        child: _usernameLoading
-                            ? const SizedBox(
-                                width: 10,
-                                height: 20,
-                                child: Text('...'))
-                            : userProvider.userDetail != null
-                                ? Text(
-                                    "What's up, ${userProvider.userDetail!.userData['username']}",
-                                    // 'hg',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyText1!
-                                        .copyWith(
-                                            fontSize: 35,
-                                            fontWeight: FontWeight.bold),
-                                  )
-                                : const Text('')),
+                    SizedBox(
+                      height: 50,
+                      width: mediaQuery.size.width * 0.8,
+                      child: FittedBox(
+                          child: _usernameLoading
+                              ? const SizedBox(
+                                  width: 10, height: 20, child: Text('...'))
+                              : userProvider.userDetail != null
+                                  ? Text(
+                                      "What's up, ${userProvider.userDetail!.userData['username']}",
+                                      // 'hg',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .copyWith(
+                                              fontSize: 35,
+                                              fontWeight: FontWeight.bold),
+                                    )
+                                  : const Text('')),
+                    ),
                     const SizedBox(height: 18),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -101,40 +104,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: 100,
                           height: 23,
                           child: ElevatedButton(
-                              onPressed: () {
-                                // await provider.getAllCategories();
-                                // print(provider.categories[0].name);
-
-                                // final allCategories = await firestore
-                                //     .collection('users')
-                                //     .doc('YeNHB2iN3WUffwNQi5SgxtpydDC2')
-                                //     .collection('categories')
-                                //     .doc('Ewfchzhju4DkjaaETpW2')
-                                //     // .collection('Business')
-                                //     .get();
-
-                                // print(allCategories.map((c) => c.data()).toList());
-                                // .doc(auth.currentUser!.uid).get();
-
-                                //     .doc(auth.currentUser!.uid)
-                                // final category = await firestore
-                                //     .collection('users_new')
-                                //     .doc(auth.currentUser!.uid)
-                                //     .collection('Business')
-                                //     .add({'name': 'Shopping'});
-                                //     .collection('Work');
-
-                                // await firestore
-                                //     .collection('users_new')
-                                //     .doc(auth.currentUser!.uid)
-                                //     .collection('Business')
-                                //     .doc('pwKbAPobC53AaccO6oq9')
-                                //     .collection('tasks')
-                                //     .add({
-                                //   'title': "addeddd",
-                                //   'content': 'addedddd too'
-                                // });
-                                // category.collection('tasks')
+                              onPressed: () async {
+                                await Provider.of<TaskProvider>(context,
+                                        listen: false)
+                                    .getAllTasks();
 
                                 Navigator.of(context).pushNamed('/newCategory');
                               },
