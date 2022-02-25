@@ -58,7 +58,8 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> changeTaskStatus(String id, String status, BuildContext context) async {
+  Future<void> changeTaskStatus(
+      String id, String status, BuildContext context) async {
     await firestore
         .collection('tasks')
         .doc(auth.currentUser!.uid)
@@ -75,8 +76,9 @@ class TaskProvider extends ChangeNotifier {
         content: Text('Task set to $status!'),
       ),
     );
-    
+
     notifyListeners();
+    print('everything works');
   }
 
   Future<void> getAllTasks() async {
@@ -110,5 +112,9 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void update(var listOfCategories) {}
+  Task getSingleTask(String id) {
+    Task singleTask = _tasks!.firstWhere((task) => task.id == id);
+
+    return singleTask;
+  }
 }

@@ -49,6 +49,7 @@ class _TaskItemState extends State<TaskItem> {
         .collection('task')
         .orderBy('date', descending: true)
         .snapshots();
+        
     final provider = Provider.of<TaskProvider>(context, listen: false);
 
     return SizedBox(
@@ -83,8 +84,9 @@ class _TaskItemState extends State<TaskItem> {
                               doc.data()! as Map<String, dynamic>;
                           // print(task);
                           return GestureDetector(
-                            onTap: () =>
-                                Navigator.of(context).pushNamed('/viewTask'),
+                            onTap: () => Navigator.of(context).pushNamed(
+                                '/viewTask',
+                                arguments: {'taskId': doc.id}),
                             child: Card(
                               elevation: 0.3,
                               shadowColor: Colors.grey[200],
