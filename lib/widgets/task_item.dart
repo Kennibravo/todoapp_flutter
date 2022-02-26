@@ -49,7 +49,7 @@ class _TaskItemState extends State<TaskItem> {
         .collection('task')
         .orderBy('date', descending: true)
         .snapshots();
-        
+
     final provider = Provider.of<TaskProvider>(context, listen: false);
 
     return SizedBox(
@@ -82,6 +82,10 @@ class _TaskItemState extends State<TaskItem> {
                             snapshot.data!.docs.map((DocumentSnapshot doc) {
                           Map<String, dynamic> task =
                               doc.data()! as Map<String, dynamic>;
+                          Timestamp date = task['date'];
+                          DateTime dt = date.toDate();
+
+                          print(date);
                           // print(task);
                           return GestureDetector(
                             onTap: () => Navigator.of(context).pushNamed(
@@ -125,8 +129,7 @@ class _TaskItemState extends State<TaskItem> {
                                     const Icon(Icons.schedule, size: 15),
                                     const SizedBox(width: 5),
                                     Text(
-                                      DateFormat.yMMMd()
-                                          .format(DateTime.parse(task['date'])),
+                                      DateFormat.yMEd().parse(dt.toString()).toString(),
                                       style: const TextStyle(fontSize: 12),
                                     )
                                   ],

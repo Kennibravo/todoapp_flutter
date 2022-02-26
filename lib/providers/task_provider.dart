@@ -94,18 +94,21 @@ class TaskProvider extends ChangeNotifier {
 
     allTasks.docs.map((doc) {
       final singleTask = doc.data();
+      Timestamp singleTs = singleTask['date'];
+
       final categoryForTask =
           (doc.data()['categories'] as Map<String, dynamic>).keys.elementAt(0);
 
       _tasks!.add(
         Task(
-            id: doc.id,
-            title: singleTask['title'],
-            content: singleTask['content'],
-            category: Category(
-                categoryForTask, auth.currentUser!.uid, DateTime.now(), 0),
-            status: singleTask['status'],
-            date: DateTime.parse(singleTask['date'].toString())),
+          id: doc.id,
+          title: singleTask['title'],
+          content: singleTask['content'],
+          category: Category(
+              categoryForTask, auth.currentUser!.uid, DateTime.now(), 0),
+          status: singleTask['status'],
+          date: singleTs.toDate(),
+        ),
       );
     }).toList();
 

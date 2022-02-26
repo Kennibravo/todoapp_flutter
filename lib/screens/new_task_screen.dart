@@ -38,7 +38,9 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
 
   @override
   void initState() {
-    Provider.of<CategoryProvider>(context, listen: false).getAllCategories();
+    defaultCategory = Provider.of<CategoryProvider>(context, listen: false)
+        .categories[0]
+        .name;
 
     super.initState();
   }
