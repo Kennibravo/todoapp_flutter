@@ -19,6 +19,7 @@ class _TaskItemState extends State<TaskItem> {
   final List<Color?> colors = [Colors.red[200], Colors.blue[100]];
 
   final FirebaseAuth auth = FirebaseAuth.instance;
+  Future? _tasksFuture;
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -27,12 +28,16 @@ class _TaskItemState extends State<TaskItem> {
     return category['color'] as Color;
   }
 
+  Future _getAllTasks() {
+    return Provider.of<TaskProvider>(context, listen: false).getAllTasks();
+  }
+
   @override
   void initState() {
+    // print('before init state');
     Future.delayed(Duration.zero, () async {
-      await Provider.of<TaskProvider>(context, listen: false).getAllTasks();
+      _tasksFuture = await _getAllTasks();
     });
-
     super.initState();
   }
 
@@ -50,7 +55,7 @@ class _TaskItemState extends State<TaskItem> {
         .orderBy('date', descending: true)
         .snapshots();
 
-    final provider = Provider.of<TaskProvider>(context, listen: false);
+    final provider = Provider.of<TaskProvider>(context);
 
     return SizedBox(
         height: 900,
@@ -129,7 +134,10 @@ class _TaskItemState extends State<TaskItem> {
                                     const Icon(Icons.schedule, size: 15),
                                     const SizedBox(width: 5),
                                     Text(
-                                      DateFormat.yMEd().parse(dt.toString()).toString(),
+                                      DateFormat.yMMMd()
+                                          .add_jm()
+                                          .format(dt)
+                                          .toString(),
                                       style: const TextStyle(fontSize: 12),
                                     )
                                   ],

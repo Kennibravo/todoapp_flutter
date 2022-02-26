@@ -2,8 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:todoapp/models/category.dart';
+import 'package:todoapp/models/task.dart';
 
 class CategoryProvider extends ChangeNotifier {
+  // CategoryProvider(this._tasks);
+
+  // List<Task> _tasks;
+
   List<Category>? _categories = [];
   final baseCollection = 'users_new';
 
@@ -59,6 +64,9 @@ class CategoryProvider extends ChangeNotifier {
             .where(categoryMap, isEqualTo: true)
             .get();
 
+        // final totalTaskInCategory =
+        //     _tasks.where((task) => task.category.name == data['name']).length;
+
         _categories!.add(
           Category(
             data['name'],
@@ -68,6 +76,14 @@ class CategoryProvider extends ChangeNotifier {
           ),
         );
 
+        // _categories!.add(
+        //   Category(
+        //     data['name'],
+        //     uid,
+        //     DateTime.now(),
+        //     totalTaskInCategory,
+        //   ),
+        // );
         notifyListeners();
       }).toList();
     } catch (e) {

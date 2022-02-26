@@ -6,7 +6,9 @@ import 'package:todoapp/models/category.dart';
 import 'package:todoapp/providers/category_provider.dart';
 
 class CategoryItem extends StatefulWidget {
-  const CategoryItem({Key? key}) : super(key: key);
+  CategoryItem({Key? key}) : super(key: key);
+
+  static Future? categoryFuture;
 
   @override
   State<CategoryItem> createState() => _CategoryItemState();
@@ -28,16 +30,16 @@ class _CategoryItemState extends State<CategoryItem> {
   @override
   void initState() {
     _categoryFuture = _getAllCategories();
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final provider = Provider.of<CategoryProvider>(context);
 
     return FutureBuilder(
-      future: _categoryFuture,
+      future: CategoryItem.categoryFuture ?? _categoryFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -109,7 +111,7 @@ class _CategoryItemState extends State<CategoryItem> {
                                               .numberOfTasks !=
                                           0)
                                       ? cardWidth *
-                                              (provider.categories[index]
+                                              (categoryData.categories[index]
                                                       .numberOfTasks /
                                                   300) +
                                           20

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:todoapp/models/category.dart';
 import 'package:todoapp/models/task.dart';
 import 'package:todoapp/providers/task_provider.dart';
 
@@ -13,15 +14,38 @@ class ViewTaskScreen extends StatefulWidget {
 }
 
 class _ViewTaskScreenState extends State<ViewTaskScreen> {
+  var isLoadedTasks = false;
+
+  var _task = Task(
+      id: '',
+      title: '',
+      content: '',
+      category: Category('DS', '43', DateTime.now(), 5),
+      status: '',
+      date: DateTime.now());
+
+  @override
+  void initState() {
+    Future.delayed(Duration.zero, () async {
+      final provider = Provider.of<TaskProvider>(context, listen: false);
+      await provider.getAllTasks();
+
+      final args =
+          ModalRoute.of(context)!.settings.arguments as Map<String, String>;
+
+      setState(() {
+        _task = provider.getSingleTask(args['taskId']!);
+      });
+    });
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, String>;
 
     final provider = Provider.of<TaskProvider>(context);
-
-    final task = provider.getSingleTask(args['taskId']!);
 
     return Scaffold(
       body: Container(
@@ -59,7 +83,7 @@ class _ViewTaskScreenState extends State<ViewTaskScreen> {
                     const SizedBox(width: 15),
                     Text(
                       // 'ds',
-                      task.title,
+                      _task.title,
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 20),
                     ),
@@ -72,7 +96,7 @@ class _ViewTaskScreenState extends State<ViewTaskScreen> {
                     const SizedBox(width: 15),
                     Flexible(
                       child: Text(
-                        task.content,
+                        _task.content,
                         // 'This is the fucking body, see how it fucking looks like right dfd dfdf fdfd fdf dre ger here',
                         style: const TextStyle(fontSize: 15),
                       ),
@@ -86,7 +110,7 @@ class _ViewTaskScreenState extends State<ViewTaskScreen> {
                     const SizedBox(width: 15),
                     Flexible(
                       child: Text(
-                        task.category.name,
+                        _task.category.name,
                         // 'This is the fucking body, see how it fucking looks like right dfd dfdf fdfd fdf dre ger here',
                         style: const TextStyle(fontSize: 15),
                       ),
@@ -118,7 +142,7 @@ class _ViewTaskScreenState extends State<ViewTaskScreen> {
                             child: Container(
                               alignment: Alignment.topLeft,
                               child: Text(
-                                DateFormat.yMMMEd().format(task.date),
+                                DateFormat.yMMMEd().format(_task.date),
                                 style: const TextStyle(fontSize: 15),
                               ),
                             ),
@@ -142,12 +166,12 @@ class _ViewTaskScreenState extends State<ViewTaskScreen> {
                 const Divider(),
                 Container(
                   alignment: Alignment.bottomRight,
-                  child: task.status == 'completed'
+                  child: _task.status == 'completed'
                       ? TextButton(
                           style: TextButton.styleFrom(primary: Colors.black),
                           onPressed: () async =>
                               await provider.changeTaskStatus(
-                            task.id,
+                            _task.id,
                             'pending',
                             context,
                           ),
@@ -161,7 +185,7 @@ class _ViewTaskScreenState extends State<ViewTaskScreen> {
                           style: TextButton.styleFrom(primary: Colors.black),
                           onPressed: () async =>
                               await provider.changeTaskStatus(
-                            task.id,
+                            _task.id,
                             'completed',
                             context,
                           ),

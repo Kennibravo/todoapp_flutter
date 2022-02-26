@@ -51,7 +51,7 @@ class TaskProvider extends ChangeNotifier {
       );
 
       _tasks!.add(newTask);
-
+      
       notifyListeners();
     } catch (e) {
       print(e);
@@ -116,8 +116,6 @@ class TaskProvider extends ChangeNotifier {
   }
 
   Task getSingleTask(String id) {
-    Task singleTask = _tasks!.firstWhere((task) => task.id == id);
-
-    return singleTask;
+    return _tasks!.firstWhere((task) => task.id == id);
   }
 }

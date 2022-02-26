@@ -116,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     const SizedBox(height: 15),
-                    const CategoryItem(),
+                    CategoryItem(),
                     const SizedBox(height: 20),
                     Text(
                       'TODAY\'S TASKS',
@@ -138,7 +138,15 @@ class _HomeScreenState extends State<HomeScreen> {
         child: FloatingActionButton(
           heroTag: 'newTask',
           backgroundColor: Colors.blue,
-          onPressed: () => Navigator.of(context).pushNamed('/newTask'),
+          onPressed: () {
+            Navigator.of(context).pushNamed('/newTask').then((value) async {
+              CategoryItem.categoryFuture =
+                  Provider.of<CategoryProvider>(context, listen: false)
+                      .getAllCategories();
+
+              setState(() {});
+            });
+          },
           child: const Icon(Icons.add, size: 30),
         ),
       ),
