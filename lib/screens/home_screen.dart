@@ -139,13 +139,15 @@ class _HomeScreenState extends State<HomeScreen> {
           heroTag: 'newTask',
           backgroundColor: Colors.blue,
           onPressed: () {
-            Navigator.of(context).pushNamed('/newTask').then((value) async {
-              CategoryItem.categoryFuture =
-                  Provider.of<CategoryProvider>(context, listen: false)
-                      .getAllCategories();
+            Navigator.of(context).pushNamed('/newTask');
 
-              setState(() {});
-            });
+            // .then((value) async {
+            //   CategoryItem.categoryFuture =
+            //       Provider.of<CategoryProvider>(context, listen: false)
+            //           .getAllCategories();
+
+            //   setState(() {});
+            // });
           },
           child: const Icon(Icons.add, size: 30),
         ),

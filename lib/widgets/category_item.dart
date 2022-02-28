@@ -37,101 +37,103 @@ class _CategoryItemState extends State<CategoryItem> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
+    final provider = Provider.of<CategoryProvider>(context);
 
-    return FutureBuilder(
-      future: CategoryItem.categoryFuture ?? _categoryFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                CircularProgressIndicator(),
-                SizedBox(height: 20),
-                Text('Fetching all categories, please wait...')
-              ],
-            ),
-          );
-        }
-
-        if (snapshot.hasError) {
-          return const Center(
-            child: Text(
-              'Sorry, we could not get any category right now, try creating one.',
-            ),
-          );
-        }
-
-        return Consumer<CategoryProvider>(builder: (ctx, categoryData, _) {
-          return SizedBox(
-            height: 150,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: categoryData.categories.length,
-              itemBuilder: (ctx, index) {
-                return Container(
-                  margin: const EdgeInsets.only(right: 10),
-                  height: 60,
-                  width: mediaQuery.size.width * 0.6,
-                  child: Card(
-                    elevation: 0.8,
-                    shadowColor: Colors.grey[200],
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            '${categoryData.categories[index].numberOfTasks} tasks',
-                            style: TextStyle(
-                                color: Colors.grey[600], fontSize: 15),
-                          ),
-                          Text(
-                            categoryData.categories[index].name,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline5!
-                                .copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 20),
-                          Stack(
-                            children: [
-                              Container(
-                                width: 300,
-                                height: 5,
-                                color: Colors.grey[300],
-                              ),
-                              AnimatedContainer(
-                                  curve: Curves.linear,
-                                  duration: const Duration(seconds: 1),
-                                  width: (categoryData.categories[index]
-                                              .numberOfTasks !=
-                                          0)
-                                      ? cardWidth *
-                                              (categoryData.categories[index]
-                                                      .numberOfTasks /
-                                                  300) +
-                                          20
-                                      : 0,
-                                  height: 5,
-                                  color: Colors.red),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                        ],
-                      ),
-                    ),
+    return Consumer<CategoryProvider>(
+      builder: (ctx, categoryData, _) {
+        return FutureBuilder(
+            future: _categoryFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 20),
+                      Text('Fetching all categories, please wait...')
+                    ],
                   ),
                 );
-              },
-            ),
-          );
-        });
+              }
+
+              if (snapshot.hasError) {
+                return const Center(
+                  child: Text(
+                    'Sorry, we could not get any category right now, try creating one.',
+                  ),
+                );
+              }
+              return SizedBox(
+                height: 150,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: categoryData.categories.length,
+                  itemBuilder: (ctx, index) {
+                    return Container(
+                      margin: const EdgeInsets.only(right: 10),
+                      height: 60,
+                      width: mediaQuery.size.width * 0.6,
+                      child: Card(
+                        elevation: 0.8,
+                        shadowColor: Colors.grey[200],
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                '${categoryData.categories[index].numberOfTasks} tasks',
+                                style: TextStyle(
+                                    color: Colors.grey[600], fontSize: 15),
+                              ),
+                              Text(
+                                categoryData.categories[index].name,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline5!
+                                    .copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 20),
+                              Stack(
+                                children: [
+                                  Container(
+                                    width: 300,
+                                    height: 5,
+                                    color: Colors.grey[300],
+                                  ),
+                                  AnimatedContainer(
+                                      curve: Curves.linear,
+                                      duration: const Duration(seconds: 1),
+                                      width: (categoryData.categories[index]
+                                                  .numberOfTasks !=
+                                              0)
+                                          ? cardWidth *
+                                                  (categoryData
+                                                          .categories[index]
+                                                          .numberOfTasks /
+                                                      300) +
+                                              20
+                                          : 0,
+                                      height: 5,
+                                      color: Colors.red),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            });
       },
     );
   }
