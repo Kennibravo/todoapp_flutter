@@ -51,7 +51,7 @@ class TaskProvider extends ChangeNotifier {
       );
 
       _tasks!.add(newTask);
-      
+
       notifyListeners();
     } catch (e) {
       print(e);
@@ -117,5 +117,22 @@ class TaskProvider extends ChangeNotifier {
 
   Task getSingleTask(String id) {
     return _tasks!.firstWhere((task) => task.id == id);
+  }
+
+  Future<void> deleteSingleTask(String id) async {
+    try {
+      _tasks!.removeWhere((task) => task.id == id);
+
+      final task = await firestore
+          .collection('tasks')
+          .doc(auth.currentUser!.uid)
+          .collection('task')
+          .doc(id)
+          .delete();
+
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
   }
 }

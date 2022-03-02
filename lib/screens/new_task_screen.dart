@@ -250,5 +250,6 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
       date: selectedDate ?? DateTime.now(),
     );
 
+    setState(() {});
   }
 }

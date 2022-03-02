@@ -29,21 +29,35 @@ class _CategoryItemState extends State<CategoryItem> {
 
   @override
   void initState() {
+    print('logger: in initSTate');
     _categoryFuture = _getAllCategories();
 
     super.initState();
   }
 
   @override
+  void didChangeDependencies() {
+    print('logger: In didchangedepen');
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final provider = Provider.of<CategoryProvider>(context);
 
     return Consumer<CategoryProvider>(
       builder: (ctx, categoryData, _) {
+        if (categoryData.categories.isEmpty) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
         return FutureBuilder(
             future: _categoryFuture,
             builder: (context, snapshot) {
+              print('logger: in future builder');
+
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
                   child: Column(

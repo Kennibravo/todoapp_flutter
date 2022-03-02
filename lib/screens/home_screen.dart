@@ -51,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final FirebaseAuth auth = FirebaseAuth.instance;
     // final provider = Provider.of<CategoryProvider>(context, listen: false);
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final categoryProvider = Provider.of<CategoryProvider>(context);
 
     // FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -139,15 +140,13 @@ class _HomeScreenState extends State<HomeScreen> {
           heroTag: 'newTask',
           backgroundColor: Colors.blue,
           onPressed: () {
-            Navigator.of(context).pushNamed('/newTask');
-
-            // .then((value) async {
-            //   CategoryItem.categoryFuture =
-            //       Provider.of<CategoryProvider>(context, listen: false)
-            //           .getAllCategories();
-
-            //   setState(() {});
-            // });
+            setState(() {});
+            Navigator.of(context).pushNamed('/newTask').then((value) async {
+              final provider =
+                  Provider.of<CategoryProvider>(context, listen: false);
+              provider.setCategoriesToEmpty();
+              provider.getAllCategories();
+            });
           },
           child: const Icon(Icons.add, size: 30),
         ),

@@ -64,8 +64,12 @@ class CategoryProvider extends ChangeNotifier {
             .where(categoryMap, isEqualTo: true)
             .get();
 
-        // final totalTaskInCategory =
-        //     _tasks.where((task) => task.category.name == data['name']).length;
+        // final f = totalTaskInCategory.docs.map((category) {
+        //   final f = category.data();
+        //   print(f);
+        // }).toList();
+
+        // print(f.length);
 
         _categories!.add(
           Category(
@@ -89,5 +93,11 @@ class CategoryProvider extends ChangeNotifier {
     } catch (e) {
       print(e);
     }
+  }
+
+  void setCategoriesToEmpty() {
+    _categories = [];
+
+    notifyListeners();
   }
 }

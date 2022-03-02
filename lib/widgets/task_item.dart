@@ -55,7 +55,7 @@ class _TaskItemState extends State<TaskItem> {
         .orderBy('date', descending: true)
         .snapshots();
 
-    final provider = Provider.of<TaskProvider>(context);
+    final provider = Provider.of<TaskProvider>(context, listen: false);
 
     return SizedBox(
         height: 900,
@@ -141,6 +141,16 @@ class _TaskItemState extends State<TaskItem> {
                                       style: const TextStyle(fontSize: 12),
                                     )
                                   ],
+                                ),
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.delete_outline),
+                                  color: Colors.red,
+                                  onPressed: () {
+                                    provider.deleteSingleTask(doc.id);
+
+                                    Provider.of<CategoryProvider>(context, listen: false)
+                                        .getAllCategories();
+                                  },
                                 ),
                               ),
                             ),
