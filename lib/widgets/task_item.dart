@@ -146,10 +146,17 @@ class _TaskItemState extends State<TaskItem> {
                                   icon: const Icon(Icons.delete_outline),
                                   color: Colors.red,
                                   onPressed: () {
-                                    provider.deleteSingleTask(doc.id);
+                                    Provider.of<TaskProvider>(context,
+                                            listen: false)
+                                        .deleteSingleTask(doc.id);
 
-                                    Provider.of<CategoryProvider>(context, listen: false)
-                                        .getAllCategories();
+                                    final provider =
+                                        Provider.of<CategoryProvider>(context,
+                                            listen: false);
+
+                                    provider.setCategoriesToEmpty();
+
+                                    provider.getAllCategories();
                                   },
                                 ),
                               ),

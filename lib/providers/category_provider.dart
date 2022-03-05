@@ -64,13 +64,6 @@ class CategoryProvider extends ChangeNotifier {
             .where(categoryMap, isEqualTo: true)
             .get();
 
-        // final f = totalTaskInCategory.docs.map((category) {
-        //   final f = category.data();
-        //   print(f);
-        // }).toList();
-
-        // print(f.length);
-
         _categories!.add(
           Category(
             data['name'],
@@ -80,14 +73,6 @@ class CategoryProvider extends ChangeNotifier {
           ),
         );
 
-        // _categories!.add(
-        //   Category(
-        //     data['name'],
-        //     uid,
-        //     DateTime.now(),
-        //     totalTaskInCategory,
-        //   ),
-        // );
         notifyListeners();
       }).toList();
     } catch (e) {

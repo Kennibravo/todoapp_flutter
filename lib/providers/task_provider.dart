@@ -7,9 +7,9 @@ import 'package:todoapp/models/task.dart';
 import 'package:todoapp/providers/category_provider.dart';
 
 class TaskProvider extends ChangeNotifier {
-  List<Category> categories;
+  List<Category> _categories;
 
-  TaskProvider(this.categories);
+  TaskProvider(this._categories);
 
   List<Task>? _tasks = [];
 
@@ -82,9 +82,7 @@ class TaskProvider extends ChangeNotifier {
   }
 
   Future<void> getAllTasks() async {
-    print(categories);
-
-    print('In provider');
+    _tasks = [];
 
     final allTasks = await firestore
         .collection('tasks')
@@ -134,5 +132,11 @@ class TaskProvider extends ChangeNotifier {
     } catch (e) {
       print(e);
     }
+  }
+
+  List<Task> getAllTasksFromCategory(Category category) {
+    return _tasks!
+        .where((task) => task.category.name == category.name)
+        .toList();
   }
 }

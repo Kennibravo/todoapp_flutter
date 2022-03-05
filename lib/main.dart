@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:todoapp/providers/category_provider.dart';
 import 'package:todoapp/providers/task_provider.dart';
 import 'package:todoapp/providers/user_provider.dart';
+import 'package:todoapp/screens/category_tasks_screen.dart';
 import 'package:todoapp/screens/home_screen.dart';
 import 'package:todoapp/screens/login_screen.dart';
 import 'package:todoapp/screens/new_category_screen.dart';
@@ -50,6 +51,7 @@ void main() async {
           '/viewTask': (context) => const ViewTaskScreen(),
           '/loginScreen': (context) => const LoginScreen(),
           '/registerScreen': (context) => const RegisterUserScreen(),
+          '/categoryTasksScreen': (context) => const CategoryTasksScreen(),
         },
       ),
     ),

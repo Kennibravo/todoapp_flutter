@@ -84,62 +84,68 @@ class _CategoryItemState extends State<CategoryItem> {
                   scrollDirection: Axis.horizontal,
                   itemCount: categoryData.categories.length,
                   itemBuilder: (ctx, index) {
-                    return Container(
-                      margin: const EdgeInsets.only(right: 10),
-                      height: 60,
-                      width: mediaQuery.size.width * 0.6,
-                      child: Card(
-                        elevation: 0.8,
-                        shadowColor: Colors.grey[200],
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 15),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                '${categoryData.categories[index].numberOfTasks} tasks',
-                                style: TextStyle(
-                                    color: Colors.grey[600], fontSize: 15),
-                              ),
-                              Text(
-                                categoryData.categories[index].name,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headline5!
-                                    .copyWith(fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 20),
-                              Stack(
-                                children: [
-                                  Container(
-                                    width: 300,
-                                    height: 5,
-                                    color: Colors.grey[300],
-                                  ),
-                                  AnimatedContainer(
-                                      curve: Curves.linear,
-                                      duration: const Duration(seconds: 1),
-                                      width: (categoryData.categories[index]
-                                                  .numberOfTasks !=
-                                              0)
-                                          ? cardWidth *
-                                                  (categoryData
-                                                          .categories[index]
-                                                          .numberOfTasks /
-                                                      300) +
-                                              20
-                                          : 0,
+                    return InkWell(
+                      onTap: () => Navigator.of(context).pushNamed(
+                          '/categoryTasksScreen',
+                          arguments: categoryData.categories[index]),
+                          
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 10),
+                        height: 60,
+                        width: mediaQuery.size.width * 0.6,
+                        child: Card(
+                          elevation: 0.8,
+                          shadowColor: Colors.grey[200],
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 15),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  '${categoryData.categories[index].numberOfTasks} tasks',
+                                  style: TextStyle(
+                                      color: Colors.grey[600], fontSize: 15),
+                                ),
+                                Text(
+                                  categoryData.categories[index].name,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headline5!
+                                      .copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 20),
+                                Stack(
+                                  children: [
+                                    Container(
+                                      width: 300,
                                       height: 5,
-                                      color: Colors.red),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                            ],
+                                      color: Colors.grey[300],
+                                    ),
+                                    AnimatedContainer(
+                                        curve: Curves.linear,
+                                        duration: const Duration(seconds: 1),
+                                        width: (categoryData.categories[index]
+                                                    .numberOfTasks !=
+                                                0)
+                                            ? cardWidth *
+                                                    (categoryData
+                                                            .categories[index]
+                                                            .numberOfTasks /
+                                                        300) +
+                                                20
+                                            : 0,
+                                        height: 5,
+                                        color: Colors.red),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
