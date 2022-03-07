@@ -199,7 +199,7 @@ class _ViewTaskScreenState extends State<ViewTaskScreen> {
                                   context,
                                 ),
                                 child: const ListTile(
-                                  leading: Icon(Icons.pending),
+                                  leading: Icon(Icons.check),
                                   title: Text('Mark as completed',
                                       style: TextStyle(fontSize: 20)),
                                 ),

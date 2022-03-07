@@ -1,17 +1,31 @@
-
+import 'package:async/async.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todoapp/providers/category_provider.dart';
 import 'package:todoapp/providers/task_provider.dart';
 import 'package:todoapp/providers/user_provider.dart';
 
-class CategoryIndexScreen extends StatelessWidget {
-  var _usernameLoading = false;
+class CategoryIndexScreen extends StatefulWidget {
   PageController? _pageController;
 
   CategoryIndexScreen(this._pageController, {Key? key}) : super(key: key);
+
+  @override
+  State<CategoryIndexScreen> createState() => _CategoryIndexScreenState();
+}
+
+class _CategoryIndexScreenState extends State<CategoryIndexScreen> {
+  var _usernameLoading = false;
+  // AsyncMemoizer? _memoizer;
+
+  @override
+  void initState() {
+    // _memoizer = AsyncMemoizer();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +54,7 @@ class CategoryIndexScreen extends StatelessWidget {
               ),
               IconButton(
                 onPressed: () async {
-                  _pageController!.jumpToPage(0);
+                  widget._pageController!.jumpToPage(0);
                   // Navigator.of(context).pop();
                 },
                 icon: Icon(
@@ -84,18 +98,38 @@ class CategoryIndexScreen extends StatelessWidget {
               )
             ],
           ),
-          const SizedBox(height: 18),
-          Expanded(
-            child: ListView(
-              children: categoryProvider.categories.map(
-                (category) {
-                  return Card(
-                    child: Text(category.name),
-                  );
-                },
-              ).toList(),
-            ),
-          ),
+          categoryProvider.categories.isEmpty
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: mediaQuery.size.width * 0.8,
+                      child: Image.asset('images/empty.png'),
+                    ),
+                    const Text('There is no task in this category'),
+                  ],
+                )
+              : Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    children: categoryProvider.categories.map(
+                      (category) {
+                        return SizedBox(
+                          height: 70,
+                          child: Card(
+                            child: ListTile(
+                              title: Text(category.name),
+                              trailing:
+                                  const Icon(Icons.delete, color: Colors.red),
+                              subtitle: Text(DateFormat.yMMMEd()
+                                  .format(category.createdAt)),
+                            ),
+                          ),
+                        );
+                      },
+                    ).toList(),
+                  ),
+                ),
           const SizedBox(height: 15),
         ],
       ),

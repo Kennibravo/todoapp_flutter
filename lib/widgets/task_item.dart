@@ -77,6 +77,21 @@ class _TaskItemState extends State<TaskItem> {
                     );
                   }
 
+                  if (snapshot.data!.docs.isEmpty) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 20),
+                        const Text(
+                          'No tasks, Click the "+" to create your first task.',
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Image.asset('images/none.png'),
+                        ),
+                      ],
+                    );
+                  }
                   return SizedBox(
                     height: MediaQuery.of(context).size.height * 0.4,
                     child: Scrollbar(

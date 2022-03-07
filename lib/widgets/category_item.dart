@@ -48,16 +48,25 @@ class _CategoryItemState extends State<CategoryItem> {
     return Consumer<CategoryProvider>(
       builder: (ctx, categoryData, _) {
         if (categoryData.categories.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: mediaQuery.size.width * 0.6,
+                height: mediaQuery.size.height * 0.1,
+                child: Image.asset('images/empty.png'),
+              ),
+              Container(
+                alignment: Alignment.center,
+                child: const Text('Opps, you have no category, create one!'),
+              ),
+            ],
           );
         }
 
         return FutureBuilder(
             future: _categoryFuture,
             builder: (context, snapshot) {
-              print('logger: in future builder');
-
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
                   child: Column(
@@ -88,7 +97,6 @@ class _CategoryItemState extends State<CategoryItem> {
                       onTap: () => Navigator.of(context).pushNamed(
                           '/categoryTasksScreen',
                           arguments: categoryData.categories[index]),
-                          
                       child: Container(
                         margin: const EdgeInsets.only(right: 10),
                         height: 60,
@@ -124,19 +132,15 @@ class _CategoryItemState extends State<CategoryItem> {
                                       height: 5,
                                       color: Colors.grey[300],
                                     ),
-                                    AnimatedContainer(
-                                        curve: Curves.linear,
-                                        duration: const Duration(seconds: 1),
-                                        width: (categoryData.categories[index]
-                                                    .numberOfTasks !=
-                                                0)
-                                            ? cardWidth *
-                                                    (categoryData
-                                                            .categories[index]
-                                                            .numberOfTasks /
-                                                        300) +
-                                                20
-                                            : 0,
+                                    Container(
+                                        // curve: Curves.linear,
+                                        // duration: const Duration(seconds: 1),
+                                        width: double.parse((categoryData
+                                                    .categories[index]
+                                                    .numberOfTasks /
+                                                100 *
+                                                300)
+                                            .toString()),
                                         height: 5,
                                         color: Colors.red),
                                   ],

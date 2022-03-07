@@ -15,30 +15,18 @@ class HeaderItem extends StatelessWidget {
           IconButton(
             onPressed: () {},
             icon: FaIcon(
-              FontAwesomeIcons.bars,
+              FontAwesomeIcons.search,
               color: Colors.grey[500],
             ),
           ),
-          Row(
-            children: [
-              IconButton(
-                onPressed: () {},
-                icon: FaIcon(
-                  FontAwesomeIcons.search,
-                  color: Colors.grey[500],
-                ),
-              ),
-              IconButton(
-                onPressed: () async {
-                  Navigator.pop(context);
-                  await FirebaseAuth.instance.signOut();
-                },
-                icon: FaIcon(
-                  FontAwesomeIcons.signOutAlt,
-                  color: Colors.grey[500],
-                ),
-              ),
-            ],
+          IconButton(
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+            },
+            icon: FaIcon(
+              FontAwesomeIcons.signOutAlt,
+              color: Colors.grey[500],
+            ),
           )
         ],
       ),

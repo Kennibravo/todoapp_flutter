@@ -41,6 +41,8 @@ class CategoryProvider extends ChangeNotifier {
   }
 
   Future<void> getAllCategories() async {
+    _categories = [];
+
     try {
       var uid = auth.currentUser!.uid;
 
@@ -85,4 +87,5 @@ class CategoryProvider extends ChangeNotifier {
 
     notifyListeners();
   }
+  
 }

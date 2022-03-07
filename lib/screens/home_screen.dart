@@ -121,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 15),
                         CategoryItem(),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 40),
                         Text(
                           'TODAY\'S TASKS',
                           style: TextStyle(
@@ -144,9 +144,23 @@ class _HomeScreenState extends State<HomeScreen> {
         width: 80,
         height: 80,
         child: FloatingActionButton(
-          heroTag: 'newTask',
           backgroundColor: Colors.blue,
           onPressed: () {
+            if (categoryProvider.categories.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('You need to create a category first!'),
+                  action: SnackBarAction(
+                    label: 'Create',
+                    onPressed: () =>
+                        Navigator.of(context).pushNamed('/newCategory'),
+                  ),
+                ),
+              );
+
+              return;
+            }
+
             setState(() {});
             Navigator.of(context).pushNamed('/newTask').then((value) async {
               final provider =

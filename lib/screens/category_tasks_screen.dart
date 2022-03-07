@@ -120,7 +120,7 @@ class _CategoryTasksScreenState extends State<CategoryTasksScreen> {
                                 margin:
                                     const EdgeInsets.symmetric(horizontal: 20),
                                 child: SizedBox(
-                                  height: 500,
+                                  height: mediaQuery.size.height * 0.8,
                                   child: ListView.builder(
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 0),
