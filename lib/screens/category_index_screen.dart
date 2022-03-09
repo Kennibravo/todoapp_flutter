@@ -47,8 +47,8 @@ class _CategoryIndexScreenState extends State<CategoryIndexScreen> {
             children: [
               IconButton(
                 onPressed: () {},
-                icon: FaIcon(
-                  FontAwesomeIcons.search,
+                icon: Icon(
+                  Icons.schedule,
                   color: Colors.grey[500],
                 ),
               ),

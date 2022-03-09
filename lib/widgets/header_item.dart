@@ -14,8 +14,8 @@ class HeaderItem extends StatelessWidget {
         children: [
           IconButton(
             onPressed: () {},
-            icon: FaIcon(
-              FontAwesomeIcons.search,
+            icon: Icon(
+              Icons.schedule,
               color: Colors.grey[500],
             ),
           ),
