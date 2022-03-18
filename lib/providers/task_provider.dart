@@ -60,6 +60,8 @@ class TaskProvider extends ChangeNotifier {
 
   Future<void> changeTaskStatus(
       String id, String status, BuildContext context) async {
+    // print(_tasks);
+
     await firestore
         .collection('tasks')
         .doc(auth.currentUser!.uid)
@@ -67,7 +69,11 @@ class TaskProvider extends ChangeNotifier {
         .doc(id)
         .update({'status': status});
 
+    await getAllTasks();
+    print('logger here: $_tasks');
+
     final task = _tasks!.firstWhere((task) => task.id == id);
+
     task.status = status;
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -111,6 +117,8 @@ class TaskProvider extends ChangeNotifier {
     }).toList();
 
     notifyListeners();
+
+    // print('logger here: $_tasks');
   }
 
   Task getSingleTask(String id) {

@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -81,10 +83,10 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 180),
+              const SizedBox(height: 120),
               TextField(
                 style: const TextStyle(fontSize: 40),
-                autofocus: true,
+                // autofocus: true,
                 controller: titleController,
                 decoration: InputDecoration(
                   // border: InputBorder.none,
@@ -96,7 +98,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
               TextFormField(
                 maxLines: 3,
                 style: const TextStyle(fontSize: 40),
-                autofocus: true,
+                // autofocus: true,
                 keyboardType: TextInputType.multiline,
                 controller: contentController,
                 decoration: InputDecoration(
@@ -106,45 +108,56 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                 ),
               ),
               const SizedBox(height: 10),
+              DateTimePicker(
+                type: DateTimePickerType.dateTimeSeparate,
+                dateMask: 'd MMM, yyyy',
+                initialDate: DateTime.now(),
+                firstDate: DateTime.now(),
+                lastDate: DateTime(2100),
+                dateLabelText: 'Date',
+                timeLabelText: "Time",
+                onChanged: (str) {
+                  setState(() {
+                    selectedDate = DateTime.parse(str);
+                  });
+                },
+              ),
+              const SizedBox(height: 10),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      elevation: 2,
-                      primary: Colors.white,
-                      onPrimary: const Color.fromARGB(255, 122, 48, 48),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 18, vertical: 6),
-                    ),
-                    onPressed: () {
-                      showTaskDatePicker();
-                    },
-                    icon: const Icon(Icons.calendar_today_outlined),
-                    label: const Text(
-                      'Choose date',
-                      style: TextStyle(fontSize: 13),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        elevation: 2,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 7,
+                        ),
+                      ),
+                      onPressed: () {},
+                      icon: const Icon(Icons.category),
+                      label: const Text(
+                        'Category',
+                        style: TextStyle(fontSize: 13),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 30),
+                  const SizedBox(width: 15),
                   Container(
                     width: 150,
                     padding: const EdgeInsets.symmetric(
                         vertical: 12, horizontal: 10),
                     child: DropdownButton(
-                      elevation: 0,
                       value: defaultCategory,
                       borderRadius: BorderRadius.circular(20),
-                      // items: categories.map((Map<String, Object?> items) {
-                      //   return DropdownMenuItem(
-                      //     value: items['name'],
-                      //     child: Text(items['name'].toString()),
-                      //   );
-                      // }).toList(),
                       items: provider.categories
-                          .map((items) => DropdownMenuItem(
-                                value: items.name,
-                                child: Text(items.name.toString()),
-                              ))
+                          .map(
+                            (items) => DropdownMenuItem(
+                              value: items.name,
+                              child: Text(items.name.toString()),
+                            ),
+                          )
                           .toList(),
                       onChanged: (item) {
                         setState(() {
@@ -156,28 +169,6 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: const Icon(Icons.date_range_rounded),
-                    label: Text(
-                      'Date Selected',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(color: Colors.white),
-                    ),
-                  ),
-                  const SizedBox(width: 15),
-                  Text(
-                    selectedDate == null
-                        ? 'No date selected'
-                        : DateFormat.yMMMEd().format(selectedDate!),
-                    style: Theme.of(context).textTheme.bodyText2,
-                  ),
-                ],
-              ),
             ],
           ),
         ),
@@ -186,6 +177,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         icon: const Icon(Icons.new_label),
         onPressed: () async {
           await addTask(defaultCategory!);
+          
           Navigator.of(context).pop();
         },
         backgroundColor: Colors.blue,
@@ -246,6 +238,13 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
       date: selectedDate ?? DateTime.now(),
     );
 
-    setState(() {});
+    final event = Event(
+      title: titleController.text,
+      description: contentController.text,
+      startDate: selectedDate!,
+      endDate: DateTime.now(),
+    );
+
+    await Add2Calendar.addEvent2Cal(event);
   }
 }

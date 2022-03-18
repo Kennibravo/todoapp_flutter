@@ -34,36 +34,206 @@ class _TaskItemState extends State<TaskItem> {
 
   @override
   void initState() {
-    // print('before init state');
     Future.delayed(Duration.zero, () async {
-      _tasksFuture = await _getAllTasks();
+      await Provider.of<TaskProvider>(context, listen: false).getAllTasks();
+      // print(
+      //     'logger: ${Provider.of<TaskProvider>(context, listen: false).tasks}');
     });
+
     super.initState();
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
+    await Provider.of<TaskProvider>(context, listen: false).getAllTasks();
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    final Stream<QuerySnapshot> tasksStream = firestore
+    final mediaQuery = MediaQuery.of(context).size;
+
+    print('logger: ${Provider.of<TaskProvider>(context, listen: false).tasks}');
+
+    final Stream<QuerySnapshot> pendingTaskStream = firestore
         .collection('tasks')
         .doc(auth.currentUser!.uid)
         .collection('task')
         .orderBy('date', descending: true)
+        .where('status', isEqualTo: 'pending')
         .snapshots();
 
-    final provider = Provider.of<TaskProvider>(context, listen: false);
+    final Stream<QuerySnapshot> completedTasksStream = firestore
+        .collection('tasks')
+        .doc(auth.currentUser!.uid)
+        .collection('task')
+        .where('status', isEqualTo: 'completed')
+        .orderBy('date', descending: true)
+        .snapshots();
 
-    return SizedBox(
-        height: 900,
-        child: SingleChildScrollView(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        //Pending
+        SizedBox(
+          // height: mediaQuery.height * 0.8,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text(
+                'Pending',
+                style: TextStyle(
+                    color: Colors.grey[600], fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
               StreamBuilder<QuerySnapshot>(
-                stream: tasksStream,
+                stream: pendingTaskStream,
+                builder:
+                    (BuildContext ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    print('logger: ${snapshot.error}');
+                    return const Center(
+                      child: Text('Something went wrong'),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(value: 1),
+                    );
+                  }
+
+                  if (snapshot.data!.docs.isEmpty) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 20),
+                        const Text(
+                          'No tasks, Click the "+" to create your first task.',
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Image.asset('images/none.png'),
+                        ),
+                      ],
+                    );
+                  }
+
+                  return Scrollbar(
+                    child: ListView(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      padding: const EdgeInsets.symmetric(vertical: 0),
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: snapshot.data!.docs.map((DocumentSnapshot doc) {
+                        Map<String, dynamic> task =
+                            doc.data()! as Map<String, dynamic>;
+                        Timestamp date = task['date'];
+                        DateTime dt = date.toDate();
+
+                        // print(task);
+                        return GestureDetector(
+                          onTap: () => Navigator.of(context).pushNamed(
+                              '/viewTask',
+                              arguments: {'taskId': doc.id}),
+                          child: Card(
+                            elevation: 0.3,
+                            shadowColor: Colors.grey[200],
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            child: ListTile(
+                              leading: task['status'] != "completed"
+                                  ? IconButton(
+                                      padding: const EdgeInsets.all(0),
+                                      icon: const Icon(Icons.circle_outlined),
+                                      onPressed: () async {
+                                        print(Provider.of<TaskProvider>(context,
+                                                listen: false)
+                                            .tasks);
+
+                                        await Provider.of<TaskProvider>(context,
+                                                listen: false)
+                                            .changeTaskStatus(
+                                                doc.id, 'completed', context);
+                                      },
+                                      // updateStatus('completed', doc.id),
+                                      iconSize: 35,
+                                      color: Colors.red)
+                                  : IconButton(
+                                      padding: const EdgeInsets.all(0),
+                                      icon: const Icon(Icons.check_circle),
+                                      iconSize: 35,
+                                      color: Colors.green,
+                                      onPressed: () async =>
+                                          await Provider.of<TaskProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .changeTaskStatus(
+                                                  doc.id, 'pending', context),
+                                      // updateStatus('pending', doc.id),
+                                    ),
+                              title: Text(
+                                task['title']!,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .copyWith(fontSize: 18),
+                              ),
+                              subtitle: Row(
+                                children: [
+                                  const Icon(Icons.schedule, size: 15),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    DateFormat.yMMMd()
+                                        .add_jm()
+                                        .format(dt)
+                                        .toString(),
+                                    style: const TextStyle(fontSize: 12),
+                                  )
+                                ],
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.delete_outline),
+                                color: Colors.red,
+                                onPressed: () {
+                                  Provider.of<TaskProvider>(context,
+                                          listen: false)
+                                      .deleteSingleTask(doc.id);
+
+                                  final provider =
+                                      Provider.of<CategoryProvider>(context,
+                                          listen: false);
+
+                                  provider.setCategoriesToEmpty();
+
+                                  provider.getAllCategories();
+                                },
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 20),
+        //Completed
+        SizedBox(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Completed',
+                style: TextStyle(
+                    color: Colors.grey[600], fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              StreamBuilder<QuerySnapshot>(
+                stream: completedTasksStream,
                 builder:
                     (BuildContext ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasError) {
@@ -92,100 +262,105 @@ class _TaskItemState extends State<TaskItem> {
                       ],
                     );
                   }
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    child: Scrollbar(
-                      child: ListView(
-                        scrollDirection: Axis.vertical,
-                        padding: const EdgeInsets.symmetric(vertical: 0),
-                        children:
-                            snapshot.data!.docs.map((DocumentSnapshot doc) {
-                          Map<String, dynamic> task =
-                              doc.data()! as Map<String, dynamic>;
-                          Timestamp date = task['date'];
-                          DateTime dt = date.toDate();
+                  return Scrollbar(
+                    child: ListView(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      padding: const EdgeInsets.symmetric(vertical: 0),
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: snapshot.data!.docs.map((DocumentSnapshot doc) {
+                        Map<String, dynamic> task =
+                            doc.data()! as Map<String, dynamic>;
+                        Timestamp date = task['date'];
+                        DateTime dt = date.toDate();
 
-                          print(date);
-                          // print(task);
-                          return GestureDetector(
-                            onTap: () => Navigator.of(context).pushNamed(
-                                '/viewTask',
-                                arguments: {'taskId': doc.id}),
-                            child: Card(
-                              elevation: 0.3,
-                              shadowColor: Colors.grey[200],
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: ListTile(
-                                leading: task['status'] != "completed"
-                                    ? IconButton(
-                                        padding: const EdgeInsets.all(0),
-                                        icon: const Icon(Icons.circle_outlined),
-                                        onPressed: () async =>
-                                            await provider.changeTaskStatus(
-                                                doc.id, 'completed', context),
-                                        // updateStatus('completed', doc.id),
-                                        iconSize: 35,
-                                        color: Colors.red)
-                                    : IconButton(
-                                        padding: const EdgeInsets.all(0),
-                                        icon: const Icon(Icons.check_circle),
-                                        iconSize: 35,
-                                        color: Colors.green,
-                                        onPressed: () async =>
-                                            provider.changeTaskStatus(
-                                                doc.id, 'pending', context),
-                                        // updateStatus('pending', doc.id),
-                                      ),
-                                title: Text(
-                                  task['title']!,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .copyWith(fontSize: 18),
-                                ),
-                                subtitle: Row(
-                                  children: [
-                                    const Icon(Icons.schedule, size: 15),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      DateFormat.yMMMd()
-                                          .add_jm()
-                                          .format(dt)
-                                          .toString(),
-                                      style: const TextStyle(fontSize: 12),
-                                    )
-                                  ],
-                                ),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.delete_outline),
-                                  color: Colors.red,
-                                  onPressed: () {
-                                    Provider.of<TaskProvider>(context,
-                                            listen: false)
-                                        .deleteSingleTask(doc.id);
+                        // print(task);
+                        return GestureDetector(
+                          onTap: () => Navigator.of(context).pushNamed(
+                              '/viewTask',
+                              arguments: {'taskId': doc.id}),
+                          child: Card(
+                            elevation: 0.3,
+                            shadowColor: Colors.grey[200],
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            child: ListTile(
+                              leading: task['status'] != "completed"
+                                  ? IconButton(
+                                      padding: const EdgeInsets.all(0),
+                                      icon: const Icon(Icons.circle_outlined),
+                                      onPressed: () async =>
+                                          await Provider.of<TaskProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .changeTaskStatus(
+                                                  doc.id, 'completed', context),
+                                      // updateStatus('completed', doc.id),
+                                      iconSize: 35,
+                                      color: Colors.red)
+                                  : IconButton(
+                                      padding: const EdgeInsets.all(0),
+                                      icon: const Icon(Icons.check_circle),
+                                      iconSize: 35,
+                                      color: Colors.green,
+                                      onPressed: () async =>
+                                          await Provider.of<TaskProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .changeTaskStatus(
+                                                  doc.id, 'pending', context),
+                                      // updateStatus('pending', doc.id),
+                                    ),
+                              title: Text(
+                                task['title']!,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1!
+                                    .copyWith(fontSize: 18),
+                              ),
+                              subtitle: Row(
+                                children: [
+                                  const Icon(Icons.schedule, size: 15),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    DateFormat.yMMMd()
+                                        .add_jm()
+                                        .format(dt)
+                                        .toString(),
+                                    style: const TextStyle(fontSize: 12),
+                                  )
+                                ],
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.delete_outline),
+                                color: Colors.red,
+                                onPressed: () {
+                                  Provider.of<TaskProvider>(context,
+                                          listen: false)
+                                      .deleteSingleTask(doc.id);
 
-                                    final provider =
-                                        Provider.of<CategoryProvider>(context,
-                                            listen: false);
+                                  final provider =
+                                      Provider.of<CategoryProvider>(context,
+                                          listen: false);
 
-                                    provider.setCategoriesToEmpty();
+                                  provider.setCategoriesToEmpty();
 
-                                    provider.getAllCategories();
-                                  },
-                                ),
+                                  provider.getAllCategories();
+                                },
                               ),
                             ),
-                          );
-                        }).toList(),
-                      ),
+                          ),
+                        );
+                      }).toList(),
                     ),
                   );
                 },
               ),
             ],
           ),
-        ));
+        ),
+      ],
+    );
   }
 
   void updateStatus(String status, String id) async {

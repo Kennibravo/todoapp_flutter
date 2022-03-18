@@ -29,16 +29,9 @@ class _CategoryItemState extends State<CategoryItem> {
 
   @override
   void initState() {
-    print('logger: in initSTate');
     _categoryFuture = _getAllCategories();
 
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    print('logger: In didchangedepen');
-    super.didChangeDependencies();
   }
 
   @override

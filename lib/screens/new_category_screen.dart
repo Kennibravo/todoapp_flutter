@@ -63,10 +63,10 @@ class _NewCategoryScreenState extends State<NewCategoryScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 180),
+              const SizedBox(height: 200),
               TextField(
                 style: const TextStyle(fontSize: 40),
-                autofocus: true,
+                // autofocus: true,
                 controller: nameController,
                 decoration: InputDecoration(
                   // border: InputBorder.none,

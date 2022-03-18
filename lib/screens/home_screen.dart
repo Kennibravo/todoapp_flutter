@@ -122,14 +122,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 15),
                         CategoryItem(),
                         const SizedBox(height: 40),
-                        Text(
-                          'TODAY\'S TASKS',
-                          style: TextStyle(
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.bold),
-                        ),
+                        
                         // const SizedBox(height: 15),
-                        const TaskItem(),
+                        const SingleChildScrollView(child: TaskItem()),
                       ],
                     ),
                   ),

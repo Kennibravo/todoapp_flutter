@@ -88,11 +88,13 @@ class _ViewTaskScreenState extends State<ViewTaskScreen> {
                         children: [
                           const Icon(Icons.topic_rounded, size: 20),
                           const SizedBox(width: 15),
-                          Text(
-                            // 'ds',
-                            _task.title,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
+                          Flexible(
+                            child: Text(
+                              // 'ds',
+                              _task.title,
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 20),
+                            ),
                           ),
                         ],
                       ),
